@@ -5124,7 +5124,8 @@ button.close {
 
 path:hover {
   stroke-width: 2px;
-  fill: lightgrey !important;
+  fill: rgba(135, 206, 235, 0.5) !important;
+  stroke: skyblue !important;
   transition: fill 0.2s, stroke-width 0.2s; }
 
 .map-tooltip, .point-tooltip {
@@ -5150,7 +5151,11 @@ body {
 
 .info {
   position: absolute;
-  width: 200px;
+  width: 300px;
   background-color: rgba(255, 255, 255, 0.5);
   bottom: 0px;
   padding: 20px; }
+
+.point-active {
+  stroke: #ff9933;
+  fill: rgba(255, 153, 51, 0.8); }

@@ -3,7 +3,7 @@ import 'styles/style.scss'
 import d3 from 'd3'
 import topojsons from './geojson'
 import map from 'file!json/map'
-
+import plotPoints from './points'
 // import worlds from './topojson'
 import _ from 'lodash';
 import worlds from './geojson';
@@ -118,13 +118,15 @@ function drawMap() {
     render(map, path, svg, tooltip);
 
     let start;
-    let frame = topojsons.length;
+    let frame = 0;
     let locked = false;
 
-    window.foo = () =>{
-        frame++
-         render(topojsons[0], path, svg, tooltip)
-    }
+    window.foo = () => {
+        frame++;
+        if (frame < worlds.length) {
+            render(worlds[worlds.length - frame - 1], path, svg, tooltip);
+        }
+    };
 
     setInterval(window.foo, 100)
     // window.foo()
@@ -176,55 +178,6 @@ const patch_fix = (geojson) => {
 };
 
 
-function plotPoints(svg, path, projection){
-    //points
-    const aa = [-122.49, 37.79];
-    const bb = [-102.39, 30.73];
-    const pgh = [-79.9764, 40.4397]; // longitude, latitude
-    const nyc = [-74.0059, 40.7127];
-
-    //const data = [aa, bb];
-    const data = [pgh, nyc];
-
-    ////const points = svg.append("g");
-    //svg.selectAll("path")
-        //.data(data).enter()
-        //.append("path")
-        //.attr("fill", "#900")
-        //.attr("stroke", "#999")
-        //.attr("d", path);
-
-    const tooltip = svg.append("div")
-        .style("position", "absolute")
-        .style("z-index", "10")
-        .style("visibility", "hidden");
-
-    //const points = svg.append("g");
-
-    //points
-    svg.selectAll('path.fossil')
-        .data([{
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": data[1]
-            },
-        }])
-        .on('mouseover', function (d) {
-            return tooltip.text("hello")
-                .style("visibility", "visible");
-        })
-        .on("mouseout", function(){
-            return tooltip.style("visibility", "hidden");
-        })
-        .enter()
-        .append("path")
-        .attr('d', function(d){console.log(path(d)); return path(d);})
-        .attr("class", "fossil")
-        .attr("fill", "#900")
-        .attr("stroke", "#999");
-
-}
 function render(mapUrl, path, svg, tooltip) {
     d3.json(mapUrl, function(error, world) {
 
@@ -241,7 +194,7 @@ function render(mapUrl, path, svg, tooltip) {
         data.enter()
             .append('path')
             .attr('class', 'feature')
-            .style('fill', 'white')
+            .style('fill', 'transparent')
             .style('stroke', 'grey')
             .attr('d', path)
             .attr('name', path)

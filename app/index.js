@@ -47,7 +47,7 @@ function findDuplicates(records) {
 }
 
 function drawMap() {
-    const width = window.innerWidth, height = window.innerHeight;
+    const width = window.innerWidth, height = window.innerHeight - 150;
     let isRotating = false;
     let mousePos = [];
 
@@ -60,7 +60,7 @@ function drawMap() {
         .range([180, -180]);
 
     const projection = d3.geo.orthographic()
-        .scale(300)
+        .scale(250)
         .translate([width / 2, height / 2])
         .clipAngle(90);
 
@@ -116,20 +116,29 @@ function drawMap() {
 
 
     let start;
-    let frame = 0;
+    let year = 0;
     let locked = false;
 
-    window.foo = () => {
-        frame++;
-        if (frame < worlds.length) {
-            render(worlds[worlds.length - frame - 1], path, svg, tooltip, projection);
+    window.foo = (givenYear) => {
+        if (!givenYear){
+            givenYear = year++;
+
+        } 
+        if (givenYear < worlds.length) {
+            console.log(worlds.length, givenYear)
+            render(worlds[worlds.length - givenYear - 1], path, svg, tooltip, projection);
             plotPoints(svg, path, projection);
         }
     };
 
-    // setTimeout(window.foo, 100)
-    setInterval(window.foo, 100)
-    // window.foo()
+    // setInterval(window.foo, 100)
+    window.foo()
+
+    const slider = document.getElementById('mya')
+    slider.max = worlds.length
+    slider.addEventListener('change', (e)=>{
+        window.foo(parseInt(e.target.value))
+    })
 
 }
 
@@ -155,6 +164,7 @@ function render(mapUrl, path, svg, tooltip, projection) {
 
         const data = svg.selectAll('path.feature')
             .data(world.features);
+
         //plot map
         data.enter()
             .append('path')
@@ -173,6 +183,7 @@ function render(mapUrl, path, svg, tooltip, projection) {
             .on('mouseout', (d) => {
                 tooltip.style('visibility', 'hidden')
             })
+
 
         //plot points
         // svg.select('g.fossils').node()

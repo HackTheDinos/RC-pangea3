@@ -188,7 +188,7 @@ function render(mapUrl, path, svg, tooltip, projection, callback) {
         // svg.select('g.fossils').node()
         const fossil_points = svg.select('g.fossils').node();
         svg.node().removeChild(fossil_points);
-        svg.node().appendChild(fossil_points);e
+        svg.node().appendChild(fossil_points);
 
         let year = world.features[0].properties.TIME;
         callback(year);

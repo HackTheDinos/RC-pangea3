@@ -2,7 +2,6 @@ import 'styles/style.scss';
 import Api from './api';
 import Points from './points';
 import GeologicIntervals from 'json!json/geologic_intervals';
-import topojsons from './geojson';
 import worlds from './geojson';
 import map from 'file!json/map';
 import d3 from 'd3';

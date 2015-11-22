@@ -130,14 +130,11 @@ function drawMap(records) {
         const year = parseInt(e.target.value);
         let geoInterval = findGeoInterval(year);
         geoIntervalContainer.innerHTML = `${geoInterval}`;
-
         geoInterval = geoInterval.replace(' ', '_')
-        console.log(geoInterval)
         const recs = getRecords(specimens[geoInterval].records);
         window.foo(year, recs);
 
     });
-
 }
 
 let patch_cache = false;

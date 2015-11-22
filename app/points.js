@@ -40,7 +40,7 @@ export default {
             .data(data)
             .enter()
             .append("path")
-            .attr('d', (d)=> {return path(d);})
+            .attr('d', (d) => {return path(d);})
             .attr("class", "fossil")
             .attr("fill", "rgba(51, 204, 255, 0.5)")
             .attr("stroke", "rgba(48, 180, 255, 0.6)")
@@ -51,8 +51,12 @@ export default {
                     .style('left', `${rect.left + 20}px`)
                     .style("opacity", "1")
             })
-            .on("mouseout", function(){
+            .on("mouseout", function () {
                 tooltip.style("opacity", "0");
             })
+            // .on("mousedown", function () {
+            //     d3.select(this)
+            //         .attr('class', 'point-active')
+            // })
         }
 }

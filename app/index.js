@@ -113,7 +113,7 @@ function drawMap(records) {
         }
 
         if (givenYear < worlds.length) {
-            render(worlds[worlds.length - givenYear - 1], path, svg, tooltip, projection, (year) => {
+            render(worlds[givenYear], path, svg, tooltip, projection, (year) => {
                 yearContainer.innerHTML = year;
             });
             const geojson = Points.generateGeoJson(records);

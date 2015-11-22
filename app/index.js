@@ -44,8 +44,6 @@ function findDuplicates(records){
     }
 }
 
-let pos;
-
 
 function drawMap(){
     const width = window.innerWidth, height = window.innerHeight;
@@ -101,8 +99,14 @@ function drawMap(){
         .attr("width", width)
         .attr("height", height);
 
-    d3.json(map, function(error, world) { 
-        var continents = topojson.feature(world, world.objects.step).features
+    render(map, path, svg)
+}
+
+function render(mapUrl, path, svg){
+    // clear svg
+    d3.select("svg#map path").remove()
+    d3.json(mapUrl, function(error, world) { 
+        const continents = topojson.feature(world, world.objects.step).features
         svg.selectAll("path")
             .data(continents).enter()
             .append("path")
@@ -110,5 +114,4 @@ function drawMap(){
             .style("fill", "steelblue")
             .attr("d", path);
     });
-
 }

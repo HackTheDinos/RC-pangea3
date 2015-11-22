@@ -90,6 +90,7 @@ function drawMap() {
         isRotating = false;
     };
 
+    // create map svg
     var svg = d3.select('#map').append('svg')
         .attr('width', width)
         .attr('height', height)
@@ -102,12 +103,13 @@ function drawMap() {
         .attr('width', width)
         .attr('height', height);
 
+    // create tooltip
     const tooltip = d3.select('body')
         .append('div')
         .attr('class', 'map-tooltip')
         .style('position', 'absolute')
         .style('z-index', '10')
-        // .style("visibility", "hidden")
+        .style("visibility", "hidden")
         .style('left', '20px')
         .style('top', '20px')
         .text('a simple tooltip');
@@ -130,7 +132,6 @@ function drawMap() {
     // window.foo()
 
 }
-
 
 let patch_cache = false;
 const patch_fix = (geojson) => {
@@ -168,6 +169,9 @@ function render(mapUrl, path, svg, tooltip, projection) {
                     .style('top', `${Math.floor(rect.top + rect.height/2)}px`)
                     .style('left', `${Math.floor(rect.left + rect.width/2)}px`)
                     .style("visibility", "visible")
+            })
+            .on('mouseout', (d) => {
+                tooltip.style('visibility', 'hidden')
             })
 
         //plot points

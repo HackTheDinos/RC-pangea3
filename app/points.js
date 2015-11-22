@@ -50,8 +50,7 @@ export default function plotPoints(svg, path, projection){
                 .style("visibility", "visible")
         })
         .on("mouseout", function(){
-            return tooltip
-                .style("visibility", "hidden");
+            tooltip.style("visibility", "hidden");
         })
 
 }

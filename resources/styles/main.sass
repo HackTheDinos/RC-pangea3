@@ -12,7 +12,7 @@ path.fossil
         transition: fill 0.2s, stroke 0.2s
 
 .map-tooltip, .point-tooltip
-    background-color: white 
+    background-color: white
     padding: 4px
     border-radius: 2px
     font-size: 0.8em
@@ -30,12 +30,32 @@ body, input
 body
     color: #333
 
-.info 
-    position: absolute
-    width: 300px 
-    background-color: rgba(white, 0.5)
-    bottom: 0px
-    padding: 20px
+  .controls {
+    position:absolute;
+    top:10px; right:10px;
+    width:250px;
+    padding:20px;
+    margin:30px;
+    border:1px solid grey;
+  }
+  code {
+    border: 1px solid grey;
+    font-size: 1.2em
+  }
+  .controls p.sect {
+    text-transform: uppercase;
+  }
+  .controls ul li {
+    margin-top: 10px;
+  }
+  .controls ul li strong {
+    display: inline-block;
+    width: 65px;
+    text-transform: uppercase;
+  }
+  .controls .info small, .controls .info strong {
+    text-transform: uppercase;
+  }
 
 .point-active
 

@@ -6,12 +6,12 @@ import topojsons from './geojson';
 import worlds from './geojson';
 import map from 'file!json/map';
 import d3 from 'd3';
+import controls from './controls';
 import _ from 'lodash';
 
 let RECORDS = {};
 
 Api.getInterval('Holocene').then((data)=> {
-    console.log(data);
     const recs = getRecords(data.records);
     drawMap(recs);
 });
@@ -41,7 +41,6 @@ function findDuplicates(records) {
             const latlng = record.map((r, i) => {
                 return `${r.lat}, ${r.lng}`;
             });
-            console.log(latlng);
         }
     }
 }
@@ -53,11 +52,11 @@ function drawMap(records) {
 
     const lambda = d3.scale.linear()
         .domain([0, width])
-        .range([-360, 360]);
+        .range([-180, 180]);
 
     const phi = d3.scale.linear()
         .domain([0, height])
-        .range([180, -180]);
+        .range([90, -90]);
 
     const projection = d3.geo.orthographic()
         .scale(240)
@@ -67,45 +66,26 @@ function drawMap(records) {
     const path = d3.geo.path()
         .projection(projection);
 
-    projection.rotate([82, -44]);
+    projection.rotate([0, 0]);
 
-    const mapMouseMove = () => {
-        if (isRotating) {
-            const [x, y] = [d3.event.pageX, d3.event.pageY];
-
-            //console.log(lambda(x),phi(y))
-            projection.rotate([lambda(x), phi(y)]);
-            svg.selectAll('path.feature').attr('d', path);
-            svg.selectAll('path.fossil').attr('d', function(d) {
-                console.log(path(d)); return path(d);
-            });
-        }
-    };
-
-    const mapMouseDown = () => {
-        d3.event.preventDefault();
-        isRotating = true;
-    };
-
-    const mapMouseUp = () => {
-        d3.event.preventDefault();
-        isRotating = false;
+    const refreshRender = () => {
+        svg.selectAll('path.feature').attr('d', path);
+        svg.selectAll('path.fossil').attr('d', path);
     };
 
     // create map svg
     var svg = d3.select('#map').append('svg')
         .attr('width', width)
         .attr('height', height)
-        .attr('id', 'svgmap')
-        .on('mousedown', mapMouseDown)
-        .on('mousemove', mapMouseMove)
-        .on('mouseup', mapMouseUp);
+        .attr('id', 'svgmap');
 
     svg = d3.select('#svgmap')
         .attr('width', width)
         .attr('height', height);
 
-    // create tooltip
+    // enable controls (panning, zoom) behavior
+    controls(svg, projection, path, refreshRender);
+
     const tooltip = d3.select('body')
         .append('div')
         .attr('class', 'map-tooltip')
@@ -148,7 +128,6 @@ function drawMap(records) {
         const geoInterval = findGeoInterval(year);
         geoIntervalContainer.innerHTML = `${geoInterval}`;
         Api.getInterval(geoInterval).then((data)=> {
-            console.log(data);
             const recs = getRecords(data.records);
             window.foo(year, recs);
         });
@@ -170,7 +149,6 @@ function findGeoInterval(year) {
     for (let interval of GeologicIntervals) {
         if (year >= interval.lag && year <= interval.eag) {
 
-            console.log(interval);
             return interval.nam;
         }
     }
@@ -210,7 +188,7 @@ function render(mapUrl, path, svg, tooltip, projection, callback) {
         // svg.select('g.fossils').node()
         const fossil_points = svg.select('g.fossils').node();
         svg.node().removeChild(fossil_points);
-        svg.node().appendChild(fossil_points);
+        svg.node().appendChild(fossil_points);e
 
         let year = world.features[0].properties.TIME;
         callback(year);

@@ -114,7 +114,7 @@ function drawMap() {
 
 
     let start;
-    let frame = 100;
+    let frame = 0;
     let locked = false;
 
     window.foo = () => {

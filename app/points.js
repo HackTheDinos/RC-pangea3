@@ -16,17 +16,21 @@ export default function plotPoints(svg, path, projection){
         //.attr("stroke", "#999")
         //.attr("d", path);
 
-    const tooltip = svg.append("div")
-        .style("position", "absolute")
-        .style("z-index", "10")
-        .style("visibility", "hidden");
-
-    //const points = svg.append("g");
+    let tooltip = d3.select('.point-tooltip')
+    if(!tooltip.node()){
+        console.log('new tooltip')
+        tooltip = d3.select('body')
+            .append('div')
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .attr('class', 'point-tooltip')
+    }
 
     //points
     const points = svg.append('g')
         .attr('class', 'fossils')
-        
+
     points.selectAll('path.fossil')
         .data([{
             "type": "Feature",
@@ -35,21 +39,21 @@ export default function plotPoints(svg, path, projection){
                 "coordinates": data[1]
             },
         }])
+        .enter()
+        .append("path")
+        .attr('d', function(d){console.log(path(d)); return path(d);})
+        .attr("class", "fossil")
+        .attr("fill", "#900")
         .on('mouseover', function (d) {
             const rect = d3.event.target.getBoundingClientRect()
-            tooltip.text('hi')
-                .style('top', `${Math.floor(rect.top + rect.height/2)}px`)
-                .style('left', `${Math.floor(rect.left + rect.width/2)}px`)
+            tooltip.text("Imma point")
+                .style('top', `${rect.top}px`)
+                .style('left', `${rect.left}px`)
                 .style("visibility", "visible")
         })
         .on("mouseout", function(){
             return tooltip
                 .style("visibility", "hidden");
         })
-        .enter()
-        .append("path")
-        .attr('d', function(d){console.log(path(d)); return path(d);})
-        .attr("class", "fossil")
-        .attr("fill", "#900")
 
 }

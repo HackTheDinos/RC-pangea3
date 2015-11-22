@@ -1,8 +1,9 @@
+$color: skyblue
 path
     &:hover
         stroke-width: 2px
-        fill: rgba(skyblue,0.8) !important
-        stroke: skyblue !important
+        fill: rgba($color, 0.5) !important
+        stroke: $color !important
         transition: fill 0.2s, stroke-width 0.2s
 
 .map-tooltip, .point-tooltip
@@ -26,7 +27,7 @@ body
 
 .info 
     position: absolute
-    width: 200px 
+    width: 300px 
     background-color: rgba(white, 0.5)
     bottom: 0px
     padding: 20px

@@ -168,6 +168,7 @@ module.exports = (svg, projection, path, render) => {
       const r = projection.rotate();
       r[2] = r[1] = 0;
       projection.rotate(r);
+      projection.scale(240);
       render();
   };
 
@@ -207,8 +208,8 @@ module.exports = (svg, projection, path, render) => {
   Mousetrap.bind('right', prevDef(horiz, -10));
   Mousetrap.bind('up', prevDef(vert, -10));
   Mousetrap.bind('down', prevDef(vert, 10));
-  Mousetrap.bind('[', prevDef(roll, -10));
-  Mousetrap.bind(']', prevDef(roll, 10));
+  Mousetrap.bind('[', prevDef(roll, 10));
+  Mousetrap.bind(']', prevDef(roll, -10));
   Mousetrap.bind(['-', 'shift+-'], prevDef(zoom, -25));
   Mousetrap.bind(['=', 'plus', 'shift+='], prevDef(zoom, 25));
   Mousetrap.bind(['space', 'shift+6'], prevDef(straight));

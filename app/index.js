@@ -8,15 +8,16 @@ import map from 'file!json/map';
 import d3 from 'd3';
 import controls from './controls';
 import _ from 'lodash';
-import * as specimens from './specimens'
+import * as specimens from './specimens';
 
 let RECORDS = {};
 
-function init(){
+function init() {
     const recs = getRecords(specimens['Holocene'].records);
     drawMap(recs);
 }
-init()
+
+init();
 
 function getRecords(records) {
     const data = {};
@@ -48,7 +49,8 @@ function findDuplicates(records) {
 }
 
 function drawMap(records) {
-    const width = window.innerWidth, height = window.innerHeight - 150;
+    const width = window.innerWidth - 400,
+      height = window.innerHeight - 150;
     let isRotating = false;
     let mousePos = [];
 
@@ -129,31 +131,32 @@ function drawMap(records) {
         const year = parseInt(e.target.value);
         let geoInterval = findGeoInterval(year);
         geoIntervalContainer.innerHTML = `${geoInterval}`;
-        geoInterval = geoInterval.replace(' ', '_')
+        geoInterval = geoInterval.replace(' ', '_');
         const recs = getRecords(specimens[geoInterval].records);
         window.foo(year, recs);
 
     });
 
     let anim;
-    document.getElementById('pause').onclick = ()=>{
-        if(anim){
-            clearInterval(anim)
+    document.getElementById('pause').onclick = ()=> {
+        if (anim) {
+            clearInterval(anim);
         }
-    }
-    document.getElementById('play').onclick = ()=>{
-        anim = setInterval(()=>{
+    };
+
+    document.getElementById('play').onclick = ()=> {
+        anim = setInterval(()=> {
             var event = new Event('change');
 
             // Listen for the event.
-            slider.value = parseInt(slider.value) + 1
-            slider.addEventListener('change', function (e) {
+            slider.value = parseInt(slider.value) + 1;
+            slider.addEventListener('change', function(e) {
             }, false);
 
             // Dispatch the event.
             slider.dispatchEvent(event);
-        }, 100)
-    }
+        }, 100);
+    };
 }
 
 let patch_cache = false;

@@ -7,16 +7,36 @@
 </head>
 <body>
     <div class="container">
-        <div class="info">
-            <p>
-                <span id="year">0</span>
-                Million years ago (<span id="geo-interval">Holocene</span>)
-            </p>
-            <input type="range" name="mya" id="mya" value="0" min="0" max="230">
-            <button id="play" class="btn btn-primary">Play</button>
-            <button id="pause" class="btn btn-default">Pause</button>
-        </div>
         <h1>Fossils on ancient maps!</h1>
+
+        <div class="controls">
+            <p class="text-center sect">Keyboard Controls</p>
+            <ul class="list-unstyled">
+              <li><strong>Rotate</strong> <span style="font-size:1.2em"><code>&larr;</code>, <code>&rarr;</code>, <code>&uarr;</code>, <code>&darr; </code></span></li>
+              <li><strong>Spin</strong> <code>[</code>, <code>]</code></li>
+              <li><strong>Zoom</strong> <code>+</code>, <code>-</code></li>
+              <li><strong>Reset</strong> <code>SPACE</code></li>
+            </ul>
+
+            <hr />
+
+            <p class="text-center sect">Mouse Controls</p>
+            <ul class="list-unstyled">
+              <li><strong>Move</strong> <code>CLICK+DRAG</code></li>
+              <li><strong>Info</strong> <code>HOVER</code></li>
+            </ul>
+
+            <hr />
+
+            <p class="text-center sect">Geological Time</p>
+            <div class="info">
+                <strong><span id="geo-interval">Holocene</span></strong>
+                <p><small><span id="year">0</span> Million years ago</small></p>
+                <input type="range" name="mya" id="mya" value="0" min="0" max="230">
+                <button id="play" class="btn btn-primary">Play</button>
+                <button id="pause" class="btn btn-default">Pause</button>
+            </div>
+        </div>
     </div>
     <div id="map"></div>
     <script src="bundle.js"></script>

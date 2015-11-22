@@ -2,8 +2,8 @@ import api from './api'
 import 'styles/style.scss' 
 import d3 from 'd3'
 // import topojsons from './topojson'
+import _ from 'lodash'
 import topojsons from './geojson'
-import map from 'file!json/map'
 
 let RECORDS = {}
 
@@ -113,14 +113,59 @@ function drawMap(){
 
 }
 
+let patch_cache = false;
+const patch_fix = (geojson) => {
+
+    console.log(geojson.features.length)
+
+    // reference features
+    const features = geojson.features;
+
+    // start a new cache, based on this geojson
+    const new_patch_cache = _.reduce(features, (cache, f) => {
+
+        if (! (f.geometry && f.geometry.coordinates.length)){
+
+            debugger;
+        }
+
+        const idx = f.properties['FEATURE_ID'];
+        if (! cache[idx]) cache[idx] = [f];
+        else cache[idx].push(f);
+        return cache;
+    }, {});
+
+    // if no previous cache, just use this new one
+    if (patch_cache == false) patch_cache = new_patch_cache;
+
+    // check this geojson against previous cache
+    // to fill in missing features
+    else {
+        for (let key in patch_cache){
+            if (!(key in new_patch_cache)) {
+                new_patch_cache[key] = patch_cache[key];
+
+                // also update geojson to fill it in
+                features.push(...patch_cache[key]);
+            }
+        }
+        patch_cache = new_patch_cache
+    }
+
+    return geojson
+};
+
 function render(mapUrl, path, svg){
     d3.json(mapUrl, function(error, world) { 
-        console.log(world.features[0].properties.TIME)
-        svg.selectAll("path").remove()
+        world = patch_fix(world);
+
+        // console.log(world.features[0].properties.TIME)
+
+        // remove all features
+        d3.selectAll('path').remove()
+
         const data = svg.selectAll("path")
-            .data(world.features, (e) => {
-                return e.properties['FEATURE_ID']
-            })
+            .data(world.features)
 
 
         data.enter()
@@ -129,6 +174,7 @@ function render(mapUrl, path, svg){
             .style("fill", "white")
             .style("stroke", 'grey')
             .attr("d", path)
+
 
     });
 

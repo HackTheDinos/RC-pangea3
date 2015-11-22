@@ -10,7 +10,6 @@ import controls from './controls';
 import _ from 'lodash';
 import * as specimens from './specimens'
 
-console.log(specimens)
 let RECORDS = {};
 
 function init(){
@@ -135,6 +134,26 @@ function drawMap(records) {
         window.foo(year, recs);
 
     });
+
+    let anim;
+    document.getElementById('pause').onclick = ()=>{
+        if(anim){
+            clearInterval(anim)
+        }
+    }
+    document.getElementById('play').onclick = ()=>{
+        anim = setInterval(()=>{
+            var event = new Event('change');
+
+            // Listen for the event.
+            slider.value = parseInt(slider.value) + 1
+            slider.addEventListener('change', function (e) {
+            }, false);
+
+            // Dispatch the event.
+            slider.dispatchEvent(event);
+        }, 100)
+    }
 }
 
 let patch_cache = false;

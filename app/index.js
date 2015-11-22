@@ -1,55 +1,56 @@
 import api from './api'
 import 'styles/style.scss' 
 import d3 from 'd3'
-// import topojsons from './topojson'
 import topojsons from './geojson'
 import map from 'file!json/map'
 
-let RECORDS = {}
+// import worlds from './topojson'
+import _ from 'lodash';
+import worlds from './geojson';
 
-api.getInterval('Jurassic').then((data)=>{
-    addRecords(data.records)
+let RECORDS = {};
+
+api.getInterval('Jurassic').then((data)=> {
+    addRecords(data.records);
 }).then(()=> {
     api.getInterval('Triassic').then((data) => {
-        addRecords(data.records)
-        drawMap()
-    })
+        addRecords(data.records);
+        drawMap();
+    });
 
-})
+});
 
-function addRecords(records){
-    for(let record of records){
-        if (!record || !('oid' in record)){
+function addRecords(records) {
+    for (let record of records) {
+        if (!record || !('oid' in record)) {
             continue;
         }
 
-        const oid = record.oid
-        if (RECORDS[oid]){
-            RECORDS[oid].push(record)
-        }
-        else {
-            RECORDS[oid] = [record]
-        }
-    }
-}
-
-function findDuplicates(records){
-    for (let oid in records){
-        const record = records[oid]
-        if(record.length > 1){
-            const latlng = record.map((r, i) =>{
-                return `${r.lat}, ${r.lng}`
-            })
-            console.log(latlng)
+        const oid = record.oid;
+        if (RECORDS[oid]) {
+            RECORDS[oid].push(record);
+        } else {
+            RECORDS[oid] = [record];
         }
     }
 }
 
+function findDuplicates(records) {
+    for (let oid in records) {
+        const record = records[oid];
+        if (record.length > 1) {
+            const latlng = record.map((r, i) => {
+                return `${r.lat}, ${r.lng}`;
+            });
+            console.log(latlng);
+        }
+    }
+}
 
-function drawMap(){
+function drawMap() {
     const width = window.innerWidth, height = window.innerHeight;
-    let isRotating = false
-    let mousePos = []
+    let isRotating = false;
+    let mousePos = [];
 
     const lambda = d3.scale.linear()
         .domain([0, width])
@@ -78,35 +79,43 @@ function drawMap(){
             svg.selectAll("path.feature").attr("d", path);
             svg.selectAll("path.fossil").attr("d", function(d) { console.log(path(d)); return path(d); })
         }
-    }
+    };
 
     const mapMouseDown = () => {
-        d3.event.preventDefault()
-        isRotating = true
-    }
+        d3.event.preventDefault();
+        isRotating = true;
+    };
 
     const mapMouseUp = () => {
-        d3.event.preventDefault()
-        isRotating = false
-    }
+        d3.event.preventDefault();
+        isRotating = false;
+    };
 
-
-    const svg = d3.select("#map").append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("id", "svgmap")
+    var svg = d3.select('#map').append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('id', 'svgmap')
         .on('mousedown', mapMouseDown)
         .on('mousemove', mapMouseMove)
         .on('mouseup', mapMouseUp);
 
-    //plotPoints(svg, path, projection);
+    svg = d3.select('#svgmap')
+        .attr('width', width)
+        .attr('height', height);
 
-    //svg = d3.select("#svgmap")
-        //.attr("width", width)
-        //.attr("height", height);
+    const tooltip = d3.select('body')
+        .append('div')
+        .attr('class', 'map-tooltip')
+        .style('position', 'absolute')
+        .style('z-index', '10')
+        // .style("visibility", "hidden")
+        .style('left', '20px')
+        .style('top', '20px')
+        .text('a simple tooltip');
+
 
     plotPoints(svg, path, projection);
-    render(map, path, svg);
+    render(map, path, svg, tooltip);
 
     let start;
     let frame = topojsons.length;
@@ -114,34 +123,57 @@ function drawMap(){
 
     window.foo = () =>{
         frame++
-         render(topojsons[0], path, svg)
+         render(topojsons[0], path, svg, tooltip)
     }
 
-    //setInterval(window.foo, 100)
-    window.foo()
+    setInterval(window.foo, 100)
+    // window.foo()
 
 }
 
-function render(mapUrl, path, svg){
-    d3.json(mapUrl, function(error, world) {
-        //console.log(world.features[0].properties.TIME)
-        svg.selectAll("path.feature").remove()
-        const data = svg.selectAll("path.feature")
-            .data(world.features, (e) => {
-                return e.properties['FEATURE_ID']
-            })
 
+let patch_cache = false;
+const patch_fix = (geojson) => {
 
-        data.enter()
-            .append("path")
-            .attr("class", "feature")
-            .style("fill", "transparent")
-            .style("stroke", 'grey')
-            .attr("d", path)
+    console.log(geojson.features.length);
 
-    });
+    // reference features
+    const features = geojson.features;
 
-}
+    // start a new cache, based on this geojson
+    const new_patch_cache = _.reduce(features, (cache, f) => {
+
+        if (!(f.geometry && f.geometry.coordinates.length)) {
+
+            debugger;
+        }
+
+        const idx = f.properties['FEATURE_ID'];
+        if (!cache[idx]) cache[idx] = [f];
+        else cache[idx].push(f);
+        return cache;
+    }, {});
+
+    // if no previous cache, just use this new one
+    if (patch_cache == false) patch_cache = new_patch_cache;
+
+    // check this geojson against previous cache
+    // to fill in missing features
+    else {
+        for (let key in patch_cache) {
+            if (!(key in new_patch_cache)) {
+                new_patch_cache[key] = patch_cache[key];
+
+                // also update geojson to fill it in
+                features.push(...patch_cache[key]);
+            }
+        }
+
+        patch_cache = new_patch_cache;
+    }
+
+    return geojson;
+};
 
 
 function plotPoints(svg, path, projection){
@@ -155,7 +187,6 @@ function plotPoints(svg, path, projection){
     const data = [pgh, nyc];
 
     ////const points = svg.append("g");
-//
     //svg.selectAll("path")
         //.data(data).enter()
         //.append("path")
@@ -192,5 +223,36 @@ function plotPoints(svg, path, projection){
         .attr("class", "fossil")
         .attr("fill", "#900")
         .attr("stroke", "#999");
+
+}
+function render(mapUrl, path, svg, tooltip) {
+    d3.json(mapUrl, function(error, world) {
+
+        // world = patch_fix(world);
+        // let year = world.features[0].properties.TIME;
+        // document.getElementById('year').innerHTML = year;
+
+        // remove all features
+        d3.selectAll('path.feature').remove();
+
+        const data = svg.selectAll('path.feature')
+            .data(world.features);
+
+        data.enter()
+            .append('path')
+            .attr('class', 'feature')
+            .style('fill', 'white')
+            .style('stroke', 'grey')
+            .attr('d', path)
+            .attr('name', path)
+            .on('mouseover', (d) => {
+                const rect = d3.event.target.getBoundingClientRect()
+                tooltip.text(d.properties['NAME'])
+                    .style('top', `${Math.floor(rect.top + rect.height/2)}px`)
+                    .style('left', `${Math.floor(rect.left + rect.width/2)}px`)
+                    .style("visibility", "visible")
+            })
+
+    });
 
 }

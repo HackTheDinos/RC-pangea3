@@ -5122,11 +5122,15 @@ button.close {
   border-width: 0 5px 5px;
   border-bottom-color: #000; }
 
-path:hover {
+path.feature:hover {
   stroke-width: 2px;
   fill: rgba(135, 206, 235, 0.5) !important;
-  stroke: skyblue !important;
   transition: fill 0.2s, stroke-width 0.2s; }
+
+path.fossil:hover {
+  fill: rgba(255, 153, 51, 0.5) !important;
+  stroke: #ff9933 !important;
+  transition: fill 0.2s, stroke 0.2s; }
 
 .map-tooltip, .point-tooltip {
   background-color: white;
@@ -5149,12 +5153,33 @@ body, input {
 body {
   color: #333; }
 
-.info {
+.controls {
   position: absolute;
-  width: 300px;
-  background-color: rgba(255, 255, 255, 0.5);
-  bottom: 0px;
-  padding: 20px; }
+  font-size: 0.8em;
+  top: 10px;
+  right: 10px;
+  width: 250px;
+  padding: 20px;
+  margin: 30px;
+  border: 1px solid grey; }
+
+code {
+  border: 1px solid grey;
+  font-size: 1.2em; }
+
+.controls p.sect {
+  text-transform: uppercase; }
+
+.controls ul li {
+  margin-top: 10px; }
+
+.controls ul li strong {
+  display: inline-block;
+  width: 65px;
+  text-transform: uppercase; }
+
+.controls .info small, .controls .info strong {
+  text-transform: uppercase; }
 
 .point-active {
   stroke: #ff9933;

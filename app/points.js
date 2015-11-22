@@ -33,17 +33,21 @@ export default function plotPoints(svg, path, projection){
             },
         }])
         .on('mouseover', function (d) {
-            return tooltip.text("hello")
-                .style("visibility", "visible");
+            const rect = d3.event.target.getBoundingClientRect()
+            tooltip.text('hi')
+                .style('top', `${Math.floor(rect.top + rect.height/2)}px`)
+                .style('left', `${Math.floor(rect.left + rect.width/2)}px`)
+                .style("visibility", "visible")
         })
         .on("mouseout", function(){
-            return tooltip.style("visibility", "hidden");
+            return tooltip
+                .style("visibility", "hidden");
         })
         .enter()
         .append("path")
         .attr('d', function(d){console.log(path(d)); return path(d);})
         .attr("class", "fossil")
         .attr("fill", "#900")
-        .attr("stroke", "#999");
+        .style('z-index', '9')
 
 }

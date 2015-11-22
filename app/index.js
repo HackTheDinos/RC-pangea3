@@ -1,12 +1,11 @@
-import api from './api'
 import 'styles/style.scss' 
-import d3 from 'd3'
-import topojsons from './geojson'
-import map from 'file!json/map'
+import api from './api'
 import plotPoints from './points'
-// import worlds from './topojson'
-import _ from 'lodash';
+import topojsons from './geojson'
 import worlds from './geojson';
+import map from 'file!json/map'
+import d3 from 'd3'
+import _ from 'lodash';
 
 let RECORDS = {};
 
@@ -114,21 +113,19 @@ function drawMap() {
         .text('a simple tooltip');
 
 
-    plotPoints(svg, path, projection);
-    render(map, path, svg, tooltip);
-
     let start;
-    let frame = 0;
+    let frame = 30;
     let locked = false;
 
     window.foo = () => {
         frame++;
         if (frame < worlds.length) {
-            render(worlds[worlds.length - frame - 1], path, svg, tooltip);
+            render(worlds[worlds.length - frame - 1], path, svg, tooltip, projection);
         }
     };
 
-    setInterval(window.foo, 100)
+    setTimeout(window.foo, 100)
+    // setInterval(window.foo, 100)
     // window.foo()
 
 }
@@ -136,8 +133,6 @@ function drawMap() {
 
 let patch_cache = false;
 const patch_fix = (geojson) => {
-
-    console.log(geojson.features.length);
 
     // reference features
     const features = geojson.features;
@@ -178,7 +173,7 @@ const patch_fix = (geojson) => {
 };
 
 
-function render(mapUrl, path, svg, tooltip) {
+function render(mapUrl, path, svg, tooltip, projection) {
     d3.json(mapUrl, function(error, world) {
 
         // world = patch_fix(world);
@@ -190,11 +185,11 @@ function render(mapUrl, path, svg, tooltip) {
 
         const data = svg.selectAll('path.feature')
             .data(world.features);
-
+        //plot map
         data.enter()
             .append('path')
             .attr('class', 'feature')
-            .style('fill', 'transparent')
+            .style('fill', 'rgba(255,255,255,0.5)')
             .style('stroke', 'grey')
             .attr('d', path)
             .attr('name', path)
@@ -206,6 +201,8 @@ function render(mapUrl, path, svg, tooltip) {
                     .style("visibility", "visible")
             })
 
+        //plot points
+        plotPoints(svg, path, projection);
     });
 
 }

@@ -8,10 +8,10 @@ import map from 'file!json/map'
 import d3 from 'd3'
 import _ from 'lodash';
 
-
 let RECORDS = {};
 
 Api.getInterval('Holocene').then((data)=> {
+    console.log(data)
     const recs = getRecords(data.records);
     drawMap(recs);
 })
@@ -59,7 +59,7 @@ function drawMap(records) {
         .range([180, -180]);
 
     const projection = d3.geo.orthographic()
-        .scale(250)
+        .scale(240)
         .translate([width / 2, height / 2])
         .clipAngle(90);
 

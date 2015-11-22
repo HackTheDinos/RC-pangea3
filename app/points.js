@@ -7,10 +7,10 @@ export default {
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [record.lng, record.lat]
+                    "coordinates": [record.pln, record.pla]
                 },
                     "properties": {
-                        "name": record.oid
+                        "name": record.tna
                     }
                 }
             geojson.push(geo)
@@ -42,7 +42,8 @@ export default {
             .append("path")
             .attr('d', (d)=> {return path(d);})
             .attr("class", "fossil")
-            .attr("fill", "#900")
+            .attr("fill", "rgba(51, 204, 255, 0.5)")
+            .attr("stroke", "rgba(48, 180, 255, 0.6)")
             .on('mouseover', (d)=> {
                 const rect = d3.event.target.getBoundingClientRect()
                 tooltip.text(d.properties['name'])

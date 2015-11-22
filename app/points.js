@@ -8,13 +8,6 @@ export default function plotPoints(svg, path, projection){
     //const data = [aa, bb];
     const data = [pgh, nyc];
 
-    ////const points = svg.append("g");
-    //svg.selectAll("path")
-        //.data(data).enter()
-        //.append("path")
-        //.attr("fill", "#900")
-        //.attr("stroke", "#999")
-        //.attr("d", path);
 
     let tooltip = d3.select('.point-tooltip')
     if(!tooltip.node()){
@@ -38,15 +31,20 @@ export default function plotPoints(svg, path, projection){
                 "type": "Point",
                 "coordinates": data[1]
             },
-        }])
+                "properties": {
+                    "name": "Pittsburgh"
+                }
+            }
+        ])
         .enter()
         .append("path")
-        .attr('d', function(d){console.log(path(d)); return path(d);})
+        .attr('d', (d)=> {console.log(path(d)); return path(d);})
         .attr("class", "fossil")
         .attr("fill", "#900")
-        .on('mouseover', function (d) {
+        .on('mouseover', (d)=> {
+            console.log(d)
             const rect = d3.event.target.getBoundingClientRect()
-            tooltip.text("Imma point")
+            tooltip.text(d.properties['name'])
                 .style('top', `${rect.top}px`)
                 .style('left', `${rect.left}px`)
                 .style("visibility", "visible")

@@ -49,7 +49,7 @@ function findDuplicates(records) {
 
 function drawMap(records) {
     const width = window.innerWidth - 400,
-      height = window.innerHeight - 150;
+      height = window.innerHeight - 100;
     let isRotating = false;
     let mousePos = [];
 

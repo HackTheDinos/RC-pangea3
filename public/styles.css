@@ -5124,16 +5124,15 @@ button.close {
 
 path:hover {
   stroke-width: 2px;
-  fill: lightgrey !important; }
+  fill: lightgrey !important;
+  transition: fill 0.2s, stroke-width 0.2s; }
 
 .map-tooltip, .point-tooltip {
   background-color: white;
   padding: 4px;
   border-radius: 2px;
-  font-size: 0.8em; }
-
-.map-tooltip {
-  transition: opacity 0.5s; }
+  font-size: 0.8em;
+  transition: opacity 0.2s; }
 
 .point-tooltip {
   background-color: #333;

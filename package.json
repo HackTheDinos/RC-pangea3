@@ -20,6 +20,7 @@
     "less": "^2.5.3",
     "less-loader": "^2.2.1",
     "lodash": "^3.10.1",
+    "mousetrap": "^1.5.3",
     "node-sass": "^3.4.2",
     "sass-loader": "^3.0.0",
     "style-loader": "^0.12.4",

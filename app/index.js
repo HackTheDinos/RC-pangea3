@@ -1,10 +1,11 @@
-import 'styles/style.scss' 
-import api from './api'
-import plotPoints from './points'
-import topojsons from './geojson'
+import 'styles/style.scss';
+import api from './api';
+import plotPoints from './points';
+import topojsons from './geojson';
 import worlds from './geojson';
-import map from 'file!json/map'
-import d3 from 'd3'
+import map from 'file!json/map';
+import d3 from 'd3';
+import controls from './controls';
 import _ from 'lodash';
 
 let RECORDS = {};
@@ -53,13 +54,13 @@ function drawMap() {
 
     const lambda = d3.scale.linear()
         .domain([0, width])
-        .range([-360, 360]);
+        .range([-180, 180]);
 
     const phi = d3.scale.linear()
         .domain([0, height])
-        .range([180, -180]);
+        .range([90, -90]);
 
-    const projection = d3.geo.orthographic()
+    const projection = window.proj = d3.geo.orthographic()
         .scale(300)
         .translate([width / 2, height / 2])
         .clipAngle(90);
@@ -67,51 +68,35 @@ function drawMap() {
     const path = d3.geo.path()
         .projection(projection);
 
-    projection.rotate([82, -44])
+    projection.rotate([0, 0]);
 
-
-    const mapMouseMove = () => {
-        if(isRotating){
-            const [x, y] = [d3.event.pageX, d3.event.pageY]
-            //console.log(lambda(x),phi(y))
-            projection.rotate([lambda(x), phi(y)])
-            svg.selectAll("path.feature").attr("d", path);
-            svg.selectAll("path.fossil").attr("d", function(d) { console.log(path(d)); return path(d); })
-        }
-    };
-
-    const mapMouseDown = () => {
-        d3.event.preventDefault();
-        isRotating = true;
-    };
-
-    const mapMouseUp = () => {
-        d3.event.preventDefault();
-        isRotating = false;
+    const refreshRender = () => {
+        svg.selectAll('path.feature').attr('d', path);
+        svg.selectAll('path.fossil').attr('d', path);
     };
 
     var svg = d3.select('#map').append('svg')
         .attr('width', width)
         .attr('height', height)
-        .attr('id', 'svgmap')
-        .on('mousedown', mapMouseDown)
-        .on('mousemove', mapMouseMove)
-        .on('mouseup', mapMouseUp);
+        .attr('id', 'svgmap');
 
     svg = d3.select('#svgmap')
         .attr('width', width)
         .attr('height', height);
+
+    // enable controls (panning, zoom) behavior
+    controls(svg, projection, path, refreshRender);
 
     const tooltip = d3.select('body')
         .append('div')
         .attr('class', 'map-tooltip')
         .style('position', 'absolute')
         .style('z-index', '10')
+
         // .style("visibility", "hidden")
         .style('left', '20px')
         .style('top', '20px')
         .text('a simple tooltip');
-
 
     let start;
     let frame = 0;
@@ -126,21 +111,19 @@ function drawMap() {
     };
 
     // setTimeout(window.foo, 100)
-    setInterval(window.foo, 100)
-    // window.foo()
+    // setInterval(window.foo, 100)
+    window.foo();
 
 }
-
 
 let patch_cache = false;
 const patch_fix = (geojson) => {
 
     geojson.features = _.filter(geojson.features, f => {
-        return f.properties['NAME'] !== 'East Antarctica'
-    })
-    return geojson
+        return f.properties['NAME'] !== 'East Antarctica';
+    });
+    return geojson;
 };
-
 
 function render(mapUrl, path, svg, tooltip, projection) {
     d3.json(mapUrl, function(error, world) {
@@ -154,6 +137,7 @@ function render(mapUrl, path, svg, tooltip, projection) {
 
         const data = svg.selectAll('path.feature')
             .data(world.features);
+
         //plot map
         data.enter()
             .append('path')
@@ -163,20 +147,19 @@ function render(mapUrl, path, svg, tooltip, projection) {
             .attr('d', path)
             .attr('name', path)
             .on('mouseover', (d) => {
-                const rect = d3.event.target.getBoundingClientRect()
+                const rect = d3.event.target.getBoundingClientRect();
                 tooltip.text(d.properties['NAME'])
-                    .style('top', `${Math.floor(rect.top + rect.height/2)}px`)
-                    .style('left', `${Math.floor(rect.left + rect.width/2)}px`)
-                    .style("visibility", "visible")
-            })
+                    .style('top', `${Math.floor(rect.top + rect.height / 2)}px`)
+                    .style('left', `${Math.floor(rect.left + rect.width / 2)}px`)
+                    .style('visibility', 'visible');
+            });
 
         //plot points
         // svg.select('g.fossils').node()
-        const fossil_points = svg.select('g.fossils').node()
-        svg.node().removeChild(fossil_points)
-        svg.node().appendChild(fossil_points)
+        const fossil_points = svg.select('g.fossils').node();
+        svg.node().removeChild(fossil_points);
+        svg.node().appendChild(fossil_points);
 
-        
     });
 
 }

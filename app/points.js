@@ -47,8 +47,8 @@ export default {
             .on('mouseover', (d)=> {
                 const rect = d3.event.target.getBoundingClientRect()
                 tooltip.text(d.properties['name'])
-                    .style('top', `${rect.top}px`)
-                    .style('left', `${rect.left}px`)
+                    .style('top', `${rect.top + 20}px`)
+                    .style('left', `${rect.left + 20}px`)
                     .style("opacity", "1")
             })
             .on("mouseout", function(){

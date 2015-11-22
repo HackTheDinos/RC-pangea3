@@ -67,12 +67,16 @@ function drawMap(){
     const path = d3.geo.path()
         .projection(projection);
 
+    projection.rotate([82, -44])
+
 
     const mapMouseMove = () => {
         if(isRotating){
             const [x, y] = [d3.event.pageX, d3.event.pageY]
+            //console.log(lambda(x),phi(y))
             projection.rotate([lambda(x), phi(y)])
-            svg.selectAll("path").attr("d", path);
+            svg.selectAll("path.feature").attr("d", path);
+            svg.selectAll("path.fossil").attr("d", function(d) { console.log(path(d)); return path(d); })
         }
     }
 
@@ -87,37 +91,42 @@ function drawMap(){
     }
 
 
-    var svg = d3.select("#map").append("svg")
+    const svg = d3.select("#map").append("svg")
         .attr("width", width)
         .attr("height", height)
         .attr("id", "svgmap")
         .on('mousedown', mapMouseDown)
         .on('mousemove', mapMouseMove)
-        .on('mouseup', mapMouseUp)
+        .on('mouseup', mapMouseUp);
 
+    //plotPoints(svg, path, projection);
 
-    svg = d3.select("#svgmap")
-        .attr("width", width)
-        .attr("height", height);
+    //svg = d3.select("#svgmap")
+        //.attr("width", width)
+        //.attr("height", height);
+
+    plotPoints(svg, path, projection);
+    render(map, path, svg);
 
     let start;
-    let frame = 0;
-    let locked = false
+    let frame = topojsons.length;
+    let locked = false;
 
     window.foo = () =>{
         frame++
-        if(frame < topojsons.length) render(topojsons[topojsons.length - frame - 1], path, svg)
+         render(topojsons[0], path, svg)
     }
 
-    setInterval(window.foo, 100)
+    //setInterval(window.foo, 100)
+    window.foo()
 
 }
 
 function render(mapUrl, path, svg){
-    d3.json(mapUrl, function(error, world) { 
-        console.log(world.features[0].properties.TIME)
-        svg.selectAll("path").remove()
-        const data = svg.selectAll("path")
+    d3.json(mapUrl, function(error, world) {
+        //console.log(world.features[0].properties.TIME)
+        svg.selectAll("path.feature").remove()
+        const data = svg.selectAll("path.feature")
             .data(world.features, (e) => {
                 return e.properties['FEATURE_ID']
             })
@@ -126,10 +135,62 @@ function render(mapUrl, path, svg){
         data.enter()
             .append("path")
             .attr("class", "feature")
-            .style("fill", "white")
+            .style("fill", "transparent")
             .style("stroke", 'grey')
             .attr("d", path)
 
     });
+
+}
+
+
+function plotPoints(svg, path, projection){
+    //points
+    const aa = [-122.49, 37.79];
+    const bb = [-102.39, 30.73];
+    const pgh = [-79.9764, 40.4397]; // longitude, latitude
+    const nyc = [-74.0059, 40.7127];
+
+    //const data = [aa, bb];
+    const data = [pgh, nyc];
+
+    ////const points = svg.append("g");
+//
+    //svg.selectAll("path")
+        //.data(data).enter()
+        //.append("path")
+        //.attr("fill", "#900")
+        //.attr("stroke", "#999")
+        //.attr("d", path);
+
+    const tooltip = svg.append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden");
+
+    //const points = svg.append("g");
+
+    //points
+    svg.selectAll('path.fossil')
+        .data([{
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": data[1]
+            },
+        }])
+        .on('mouseover', function (d) {
+            return tooltip.text("hello")
+                .style("visibility", "visible");
+        })
+        .on("mouseout", function(){
+            return tooltip.style("visibility", "hidden");
+        })
+        .enter()
+        .append("path")
+        .attr('d', function(d){console.log(path(d)); return path(d);})
+        .attr("class", "fossil")
+        .attr("fill", "#900")
+        .attr("stroke", "#999");
 
 }

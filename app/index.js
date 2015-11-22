@@ -1,35 +1,36 @@
 import 'styles/style.scss' 
 import Api from './api'
 import Points from './points'
+import GeologicIntervals from 'json!json/geologic_intervals'
 import topojsons from './geojson'
 import worlds from './geojson';
 import map from 'file!json/map'
 import d3 from 'd3'
 import _ from 'lodash';
 
-import GeologicIntervals from 'json!json/geologic_intervals'
-console.log(GeologicIntervals)
 
 let RECORDS = {};
 
-Api.getInterval('Jurassic').then((data)=> {
-    addRecords(data.records);
-        drawMap(RECORDS);
+Api.getInterval('Holocene').then((data)=> {
+    const recs = getRecords(data.records);
+    drawMap(recs);
 })
 
-function addRecords(records) {
+function getRecords(records) {
+    const data = {}
     for (let record of records) {
         if (!record || !('oid' in record)) {
             continue;
         }
 
         const oid = record.oid;
-        if (RECORDS[oid]) {
-            RECORDS[oid].push(record);
+        if (data[oid]) {
+            data[oid].push(record);
         } else {
-            RECORDS[oid] = [record];
+            data[oid] = [record];
         }
     }
+    return data
 }
 
 function findDuplicates(records) {
@@ -117,26 +118,38 @@ function drawMap(records) {
     let year = 0;
     let locked = false;
 
-    window.foo = (givenYear) => {
+    const yearContainer = document.getElementById('year')
+    const geoIntervalContainer = document.getElementById('geo-interval')
+
+    window.foo = (givenYear, records) => {
         if (!givenYear){
             givenYear = year++;
 
         } 
         if (givenYear < worlds.length) {
-            console.log(worlds.length, givenYear)
-            render(worlds[worlds.length - givenYear - 1], path, svg, tooltip, projection);
+            render(worlds[givenYear], path, svg, tooltip, projection, (year) => {
+                yearContainer.innerHTML = year;
+            });
             const geojson = Points.generateGeoJson(records)
-            Points.plotPoints(svg, path, projection,geojson);
+            Points.plotPoints(svg, path, projection, geojson);
         }
     };
 
     // setInterval(window.foo, 100)
-    window.foo()
+    window.foo(0, records)
 
     const slider = document.getElementById('mya')
-    slider.max = worlds.length + 5
-    slider.addEventListener('change', (e)=>{
-        window.foo(parseInt(e.target.value))
+    slider.max = worlds.length
+    slider.addEventListener('input', (e)=>{
+        const year = parseInt(e.target.value)
+        const geoInterval = findGeoInterval(year)
+        geoIntervalContainer.innerHTML = `${geoInterval}`
+        Api.getInterval(geoInterval).then((data)=> {
+            console.log(data)
+            const recs = getRecords(data.records);
+            window.foo(year, recs)
+        })
+
     })
 
 }
@@ -151,13 +164,20 @@ const patch_fix = (geojson) => {
 };
 
 
-function render(mapUrl, path, svg, tooltip, projection) {
+function findGeoInterval(year){
+    for(let interval of GeologicIntervals){
+        if(year >= interval.lag && year <= interval.eag){
+
+            console.log(interval)
+            return interval.nam
+        }
+    }
+}
+
+function render(mapUrl, path, svg, tooltip, projection, callback) {
     d3.json(mapUrl, function(error, world) {
 
         world = patch_fix(world);
-        let year = world.features[0].properties.TIME;
-        document.getElementById('year').innerHTML = year;
-
         // remove all features
         d3.selectAll('path.feature').remove();
 
@@ -190,7 +210,8 @@ function render(mapUrl, path, svg, tooltip, projection) {
         svg.node().removeChild(fossil_points)
         svg.node().appendChild(fossil_points)
 
-        
+        let year = world.features[0].properties.TIME;
+        callback(year)
     });
 
 }

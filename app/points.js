@@ -21,6 +21,7 @@ export default {
     plotPoints(svg, path, projection, data){
 
         let tooltip = d3.select('.point-tooltip')
+
         if(!tooltip.node()){
             tooltip = d3.select('body')
                 .append('div')
@@ -31,6 +32,7 @@ export default {
         }
 
         //points
+        svg.select('g').remove()
         const points = svg.append('g')
             .attr('class', 'fossils')
 

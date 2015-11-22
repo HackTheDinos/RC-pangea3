@@ -114,18 +114,19 @@ function drawMap() {
 
 
     let start;
-    let frame = 30;
+    let frame = 100;
     let locked = false;
 
     window.foo = () => {
         frame++;
         if (frame < worlds.length) {
             render(worlds[worlds.length - frame - 1], path, svg, tooltip, projection);
+            plotPoints(svg, path, projection);
         }
     };
 
-    setTimeout(window.foo, 100)
-    // setInterval(window.foo, 100)
+    // setTimeout(window.foo, 100)
+    setInterval(window.foo, 100)
     // window.foo()
 
 }
@@ -134,51 +135,19 @@ function drawMap() {
 let patch_cache = false;
 const patch_fix = (geojson) => {
 
-    // reference features
-    const features = geojson.features;
-
-    // start a new cache, based on this geojson
-    const new_patch_cache = _.reduce(features, (cache, f) => {
-
-        if (!(f.geometry && f.geometry.coordinates.length)) {
-
-            debugger;
-        }
-
-        const idx = f.properties['FEATURE_ID'];
-        if (!cache[idx]) cache[idx] = [f];
-        else cache[idx].push(f);
-        return cache;
-    }, {});
-
-    // if no previous cache, just use this new one
-    if (patch_cache == false) patch_cache = new_patch_cache;
-
-    // check this geojson against previous cache
-    // to fill in missing features
-    else {
-        for (let key in patch_cache) {
-            if (!(key in new_patch_cache)) {
-                new_patch_cache[key] = patch_cache[key];
-
-                // also update geojson to fill it in
-                features.push(...patch_cache[key]);
-            }
-        }
-
-        patch_cache = new_patch_cache;
-    }
-
-    return geojson;
+    geojson.features = _.filter(geojson.features, f => {
+        return f.properties['NAME'] !== 'East Antarctica'
+    })
+    return geojson
 };
 
 
 function render(mapUrl, path, svg, tooltip, projection) {
     d3.json(mapUrl, function(error, world) {
 
-        // world = patch_fix(world);
-        // let year = world.features[0].properties.TIME;
-        // document.getElementById('year').innerHTML = year;
+        world = patch_fix(world);
+        let year = world.features[0].properties.TIME;
+        document.getElementById('year').innerHTML = year;
 
         // remove all features
         d3.selectAll('path.feature').remove();
@@ -189,7 +158,7 @@ function render(mapUrl, path, svg, tooltip, projection) {
         data.enter()
             .append('path')
             .attr('class', 'feature')
-            .style('fill', 'rgba(255,255,255,0.5)')
+            .style('fill', 'rgba(255,255,255,0.1)')
             .style('stroke', 'grey')
             .attr('d', path)
             .attr('name', path)
@@ -202,7 +171,12 @@ function render(mapUrl, path, svg, tooltip, projection) {
             })
 
         //plot points
-        plotPoints(svg, path, projection);
+        // svg.select('g.fossils').node()
+        const fossil_points = svg.select('g.fossils').node()
+        svg.node().removeChild(fossil_points)
+        svg.node().appendChild(fossil_points)
+
+        
     });
 
 }

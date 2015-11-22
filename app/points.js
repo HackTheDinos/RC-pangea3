@@ -24,7 +24,10 @@ export default function plotPoints(svg, path, projection){
     //const points = svg.append("g");
 
     //points
-    svg.selectAll('path.fossil')
+    const points = svg.append('g')
+        .attr('class', 'fossils')
+        
+    points.selectAll('path.fossil')
         .data([{
             "type": "Feature",
             "geometry": {
@@ -48,6 +51,5 @@ export default function plotPoints(svg, path, projection){
         .attr('d', function(d){console.log(path(d)); return path(d);})
         .attr("class", "fossil")
         .attr("fill", "#900")
-        .style('z-index', '9')
 
 }

@@ -1,23 +1,21 @@
 import 'styles/style.scss' 
-import api from './api'
-import plotPoints from './points'
+import Api from './api'
+import Points from './points'
 import topojsons from './geojson'
 import worlds from './geojson';
 import map from 'file!json/map'
 import d3 from 'd3'
 import _ from 'lodash';
 
+import GeologicIntervals from 'json!json/geologic_intervals'
+console.log(GeologicIntervals)
+
 let RECORDS = {};
 
-api.getInterval('Jurassic').then((data)=> {
+Api.getInterval('Jurassic').then((data)=> {
     addRecords(data.records);
-}).then(()=> {
-    api.getInterval('Triassic').then((data) => {
-        addRecords(data.records);
-        drawMap();
-    });
-
-});
+        drawMap(RECORDS);
+})
 
 function addRecords(records) {
     for (let record of records) {
@@ -46,7 +44,7 @@ function findDuplicates(records) {
     }
 }
 
-function drawMap() {
+function drawMap(records) {
     const width = window.innerWidth, height = window.innerHeight - 150;
     let isRotating = false;
     let mousePos = [];
@@ -127,7 +125,8 @@ function drawMap() {
         if (givenYear < worlds.length) {
             console.log(worlds.length, givenYear)
             render(worlds[worlds.length - givenYear - 1], path, svg, tooltip, projection);
-            plotPoints(svg, path, projection);
+            const geojson = Points.generateGeoJson(records)
+            Points.plotPoints(svg, path, projection,geojson);
         }
     };
 

@@ -205,8 +205,8 @@ module.exports = (svg, projection, path, render) => {
   // keybindings
   Mousetrap.bind('left', prevDef(horiz, 10));
   Mousetrap.bind('right', prevDef(horiz, -10));
-  Mousetrap.bind('up', prevDef(vert, 10));
-  Mousetrap.bind('down', prevDef(vert, -10));
+  Mousetrap.bind('up', prevDef(vert, -10));
+  Mousetrap.bind('down', prevDef(vert, 10));
   Mousetrap.bind('[', prevDef(roll, -10));
   Mousetrap.bind(']', prevDef(roll, 10));
   Mousetrap.bind(['-', 'shift+-'], prevDef(zoom, -25));

@@ -7,6 +7,9 @@ import map from 'file!json/map'
 import d3 from 'd3'
 import _ from 'lodash';
 
+import GeologicIntervals from 'json!json/geologic_intervals'
+console.log(GeologicIntervals)
+
 let RECORDS = {};
 
 Api.getInterval('Jurassic').then((data)=> {

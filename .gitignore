@@ -1,0 +1,12 @@
+<<<<<<< HEAD
+.DS_Store
+*.orig
+/*.log
+/node_modules
+/dist
+/bower_components
+/*.sublime-workspace
+=======
+.pyc
+gplates_data
+>>>>>>> 05ba5908178b12f9e27e96e6a5247c6b04a96181

@@ -33,11 +33,6 @@ module.exports = {
                 test: /\.less$/,
                 loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader')
             },
-            // Json
-            {
-                test: /\.json$/,
-                loader: 'json'
-            },
             // Images
             {
                 test: /\.jpe?g$|\.gif$|\.png$|\.svg$/i, 

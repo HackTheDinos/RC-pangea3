@@ -44,25 +44,58 @@ function findDuplicates(records){
     }
 }
 
+let pos;
+
 
 function drawMap(){
-    var width = 1000,
-    height = 1000;
+    const width = window.innerWidth, height = window.innerHeight;
+    let isRotating = false
+    let mousePos = []
+
+    const lambda = d3.scale.linear()
+        .domain([0, width])
+        .range([-360, 360]);
+
+    const phi = d3.scale.linear()
+        .domain([0, height])
+        .range([180, -180]);
+
+    const projection = d3.geo.orthographic()
+        .scale(300)
+        .translate([width / 2, height / 2])
+        .clipAngle(90);
+
+    const path = d3.geo.path()
+        .projection(projection);
+
+
+    const mapMouseMove = () => {
+        if(isRotating){
+            const [x, y] = [d3.event.pageX, d3.event.pageY]
+            projection.rotate([lambda(x), phi(y)])
+            svg.selectAll("path").attr("d", path);
+        }
+    }
+
+    const mapMouseDown = () => {
+        d3.event.preventDefault()
+        isRotating = true
+    }
+
+    const mapMouseUp = () => {
+        d3.event.preventDefault()
+        isRotating = false
+    }
+
 
     var svg = d3.select("#map").append("svg")
         .attr("width", width)
         .attr("height", height)
         .attr("id", "svgmap")
+        .on('mousedown', mapMouseDown)
+        .on('mousemove', mapMouseMove)
+        .on('mouseup', mapMouseUp)
 
-    var projection = d3.geo.orthographic()
-        .scale(225)
-        .translate([width / 2, height / 2])
-        .clipAngle(90);
-
-    var path = d3.geo.path()
-        .projection(projection);
-
-    // set projection
 
     svg = d3.select("#svgmap")
         .attr("width", width)

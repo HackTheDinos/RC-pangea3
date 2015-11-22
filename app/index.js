@@ -126,7 +126,7 @@ function drawMap(records) {
 
     const slider = document.getElementById('mya');
     slider.max = worlds.length;
-    slider.addEventListener('input', (e)=> {
+    slider.addEventListener('change', (e)=> {
         const year = parseInt(e.target.value);
         let geoInterval = findGeoInterval(year);
         geoIntervalContainer.innerHTML = `${geoInterval}`;

@@ -1,4 +1,4 @@
-# Webpack Starter
+# [FOSSILS ON ANCIENT MAPS!](http://hackthedinos.github.io/RC-pangea3/public/)
 Simple directory and config setup for a Webpack project with front-end web only. 
 
 ## Development 

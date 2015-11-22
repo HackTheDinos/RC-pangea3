@@ -1,7 +1,8 @@
 import api from './api'
 import 'styles/style.scss' 
 import d3 from 'd3'
-import topojson from 'topojson'
+// import topojsons from './topojson'
+import topojsons from './geojson'
 import map from 'file!json/map'
 
 let RECORDS = {}
@@ -99,19 +100,36 @@ function drawMap(){
         .attr("width", width)
         .attr("height", height);
 
-    render(map, path, svg)
+    let start;
+    let frame = 0;
+    let locked = false
+
+    window.foo = () =>{
+        frame++
+        if(frame < topojsons.length) render(topojsons[topojsons.length - frame - 1], path, svg)
+    }
+
+    setInterval(window.foo, 100)
+
 }
 
 function render(mapUrl, path, svg){
-    // clear svg
-    d3.select("svg#map path").remove()
     d3.json(mapUrl, function(error, world) { 
-        const continents = topojson.feature(world, world.objects.step).features
-        svg.selectAll("path")
-            .data(continents).enter()
+        console.log(world.features[0].properties.TIME)
+        svg.selectAll("path").remove()
+        const data = svg.selectAll("path")
+            .data(world.features, (e) => {
+                return e.properties['FEATURE_ID']
+            })
+
+
+        data.enter()
             .append("path")
             .attr("class", "feature")
-            .style("fill", "steelblue")
-            .attr("d", path);
+            .style("fill", "white")
+            .style("stroke", 'grey')
+            .attr("d", path)
+
     });
+
 }

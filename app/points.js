@@ -27,7 +27,7 @@ export default {
                 .append('div')
                 .style("position", "absolute")
                 .style("z-index", "10")
-                .style("visibility", "hidden")
+                .style("opacity", "0")
                 .attr('class', 'point-tooltip')
         }
 
@@ -49,10 +49,10 @@ export default {
                 tooltip.text(d.properties['name'])
                     .style('top', `${rect.top}px`)
                     .style('left', `${rect.left}px`)
-                    .style("visibility", "visible")
+                    .style("opacity", "1")
             })
             .on("mouseout", function(){
-                tooltip.style("visibility", "hidden");
+                tooltip.style("opacity", "0");
             })
         }
 }

@@ -8,13 +8,16 @@ import map from 'file!json/map';
 import d3 from 'd3';
 import controls from './controls';
 import _ from 'lodash';
+import * as specimens from './specimens'
 
+console.log(specimens)
 let RECORDS = {};
 
-Api.getInterval('Holocene').then((data)=> {
-    const recs = getRecords(data.records);
+function init(){
+    const recs = getRecords(specimens['Holocene'].records);
     drawMap(recs);
-});
+}
+init()
 
 function getRecords(records) {
     const data = {};
@@ -91,7 +94,7 @@ function drawMap(records) {
         .attr('class', 'map-tooltip')
         .style('position', 'absolute')
         .style('z-index', '10')
-        .style('visibility', 'hidden')
+        .style('opacity', '0')
         .style('left', '20px')
         .style('top', '20px')
         .text('a simple tooltip');
@@ -110,7 +113,7 @@ function drawMap(records) {
         }
 
         if (givenYear < worlds.length) {
-            render(worlds[givenYear], path, svg, tooltip, projection, (year) => {
+            render(worlds[worlds.length - givenYear - 1], path, svg, tooltip, projection, (year) => {
                 yearContainer.innerHTML = year;
             });
             const geojson = Points.generateGeoJson(records);
@@ -125,12 +128,13 @@ function drawMap(records) {
     slider.max = worlds.length;
     slider.addEventListener('input', (e)=> {
         const year = parseInt(e.target.value);
-        const geoInterval = findGeoInterval(year);
+        let geoInterval = findGeoInterval(year);
         geoIntervalContainer.innerHTML = `${geoInterval}`;
-        Api.getInterval(geoInterval).then((data)=> {
-            const recs = getRecords(data.records);
-            window.foo(year, recs);
-        });
+
+        geoInterval = geoInterval.replace(' ', '_')
+        console.log(geoInterval)
+        const recs = getRecords(specimens[geoInterval].records);
+        window.foo(year, recs);
 
     });
 
@@ -178,10 +182,10 @@ function render(mapUrl, path, svg, tooltip, projection, callback) {
                 tooltip.text(d.properties['NAME'])
                     .style('top', `${Math.floor(rect.top + rect.height / 2)}px`)
                     .style('left', `${Math.floor(rect.left + rect.width / 2)}px`)
-                    .style('visibility', 'visible');
+                    .style('opacity', '1');
             })
             .on('mouseout', (d) => {
-                tooltip.style('visibility', 'hidden');
+                tooltip.style('opacity', '0');
             });
 
         //plot points

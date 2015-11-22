@@ -135,7 +135,7 @@ function drawMap() {
     window.foo()
 
     const slider = document.getElementById('mya')
-    slider.max = worlds.length
+    slider.max = worlds.length + 1
     slider.addEventListener('change', (e)=>{
         window.foo(parseInt(e.target.value))
     })
@@ -163,7 +163,9 @@ function render(mapUrl, path, svg, tooltip, projection) {
         d3.selectAll('path.feature').remove();
 
         const data = svg.selectAll('path.feature')
-            .data(world.features);
+            .data(world.features, (e) => {
+                return e.properties.FEATURE_ID
+            });
 
         //plot map
         data.enter()

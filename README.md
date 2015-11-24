@@ -1,8 +1,8 @@
 # FOSSILS ON ANCIENT MAPS!
 
-## [hackthedinos.github.io/RC-pangea3/public](http://hackthedinos.github.io/RC-pangea3/public)
-
 Visualize fossil paleogeography superimposed on continental drift over 230 million years.
+
+## [hackthedinos.github.io/RC-pangea3/public](http://hackthedinos.github.io/RC-pangea3/public)
 
 <a href='http://www.recurse.com' title='Made with love at the Recurse Center'><img src='https://cloud.githubusercontent.com/assets/2883345/11322974/9e572610-910b-11e5-9775-698cbe868a67.png' height='59px'/></a>
 

@@ -38,6 +38,6 @@ webpack --config webpack.config.js
 
 ## Data
 
-* Continental drift model --> Müller et al. (2016) [Ocean basin evolution and global-scale plate reorganization events since Pangea breakup](http://www.earthbyte.org/ocean-basin-evolution-and-global-scale-plate-reorganization-events-since-pangea-breakup/).
+* Continental drift model --> Müller <i>et al.</i> (2016) [Ocean basin evolution and global-scale plate reorganization events since Pangea breakup](http://www.earthbyte.org/ocean-basin-evolution-and-global-scale-plate-reorganization-events-since-pangea-breakup/).
 
-* Fossil specimens --> [The Paleobiology Database](https://paleobiodb.org/)
+* Fossil specimens --> [The Paleobiology Database](https://paleobiodb.org/).
